@@ -19,21 +19,28 @@ import string
 def count_word_in_file(path: str | Path, word: str) -> int:
     """
     Devuelve el número de apariciones de `word` dentro del fichero de texto `path`.
-
-    Reglas:
-    - Búsqueda NO sensible a mayúsculas/minúsculas.
-      Ej: "Hola" cuenta como "hola".
-    - Cuenta por palabra (no por subcadena).
-      Ej: si word="sol", NO debe contar dentro de "solución".
-    - Considera puntuación básica como separador (.,;:!? etc.)
-      Pista: puedes traducir la puntuación a espacios.
-
-    Errores:
-    - Si el fichero no existe, lanza FileNotFoundError.
-    - Si word está vacía o solo espacios, lanza ValueError.
-
-    Ejemplo:
-    Fichero: "Hola hola mundo"
-    word="hola" -> 2
     """
-    raise NotImplementedError("Implementa count_word_in_file(path, word)")
+
+    # Validar la palabra
+    if not word or word.strip() == "":
+        raise ValueError("La palabra no puede estar vacía o contener solo espacios")
+
+    path = Path(path)
+
+    # Abrir fichero (esto lanzará FileNotFoundError si no existe)
+    with path.open("r", encoding="utf-8") as f:
+        text = f.read()
+
+    # Normalizar a minúsculas
+    text = text.lower()
+    word = word.lower().strip()
+
+    # Reemplazar la puntuación por espacios
+    translator = str.maketrans(string.punctuation, " " * len(string.punctuation))
+    text = text.translate(translator)
+
+    # Separar en palabras
+    words = text.split()
+
+    # Contar coincidencias exactas
+    return words.count(word)
